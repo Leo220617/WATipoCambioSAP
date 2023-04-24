@@ -155,3 +155,4 @@ C:\Users\larce\Documents\GitHub\WATipoCambioSAP\WATickets\WATickets\obj\Release\
 C:\Users\larce\Documents\GitHub\WATipoCambioSAP\WATickets\WATickets\obj\Release\WATipoCambioSAP.csproj.CopyComplete
 C:\Users\larce\Documents\GitHub\WATipoCambioSAP\WATickets\WATickets\obj\Release\WATickets.dll
 C:\Users\larce\Documents\GitHub\WATipoCambioSAP\WATickets\WATickets\obj\Release\WATickets.pdb
+C:\Users\larce\Documents\GitHub\WATipoCambioSAP\WATickets\WATickets\obj\Release\WATipoCambioSAP.csprojAssemblyReference.cache
