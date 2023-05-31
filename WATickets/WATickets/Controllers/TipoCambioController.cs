@@ -40,16 +40,18 @@ namespace WATickets.Controllers
                             tp.SetCurrencyRate(G.ObtenerConfig("Moneda"), DateTime.Now, Convert.ToDouble(respZoho.venta));
 
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
+                            return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
 
 
                         }
 
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
 
 
                 }
