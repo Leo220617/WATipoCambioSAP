@@ -23,7 +23,7 @@ namespace WATickets.Controllers
                 HttpClient clienteProd = new HttpClient();
                 clienteProd.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                string url =  "https://tipodecambio.paginasweb.cr/api//" + DateTime.Now.Day + "/" + DateTime.Now.Month + "/" + DateTime.Now.Year;
+                string url = "https://apis.gometa.org/tdc/tdc.json?fbclid=IwAR1Wfr6SFwV8_0-x9n5JrjMmNTkOcUIWdekp1Sc6sFpTnIuP29ok-aVuQWI";//"https://tipodecambio.paginasweb.cr/api//" + DateTime.Now.Day + "/" + DateTime.Now.Month + "/" + DateTime.Now.Year;
                 try
                 {
                     HttpResponseMessage response3 = await clienteProd.GetAsync(url);
@@ -36,16 +36,21 @@ namespace WATickets.Controllers
                         try
                         {
                             //var respZoho = await response3.Content.ReadAsAsync<RespuestaTipoCambio>();
-                            var respZoho = JsonSerializer.Deserialize<RespuestaTP>(res);
-                            
+                            var respZoho = JsonSerializer.Deserialize<RespuestaTipoCambio>(res);
+
+                            if (Convert.ToDouble(respZoho.venta) > 10000)
+                            {
+                                respZoho.venta = respZoho.venta.Replace(".", ",");
+                            }
                             valorCambioVenta = Convert.ToDouble(respZoho.venta);
+
 
                         }
                         catch (Exception ex)
                         {
                             var texto = DateTime.Now.ToLongDateString() + " -> Primer intento: " + ex.Message + "\n";
                             texto += "===================================================";
-                            G.GuardarTxt("BitacoraTP_" + DateTime.Now.ToShortDateString() + ".txt",  texto);
+                            G.GuardarTxt("BitacoraTP_" + DateTime.Now.ToShortDateString() + ".txt", texto);
 
                         }
 
@@ -65,7 +70,7 @@ namespace WATickets.Controllers
                     clienteProd = new HttpClient();
                     clienteProd.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    url = "https://apis.gometa.org/tdc/tdc.json?fbclid=IwAR1Wfr6SFwV8_0-x9n5JrjMmNTkOcUIWdekp1Sc6sFpTnIuP29ok-aVuQWI";//"https://tipodecambio.paginasweb.cr/api//" + DateTime.Now.Day + "/" + DateTime.Now.Month + "/" + DateTime.Now.Year;
+                    url = "https://tipodecambio.paginasweb.cr/api//" + DateTime.Now.Day + "/" + DateTime.Now.Month + "/" + DateTime.Now.Year;
                     try
                     {
                         HttpResponseMessage response3 = await clienteProd.GetAsync(url);
@@ -78,14 +83,9 @@ namespace WATickets.Controllers
                             try
                             {
                                 //var respZoho = await response3.Content.ReadAsAsync<RespuestaTipoCambio>();
-                                var respZoho = JsonSerializer.Deserialize<RespuestaTipoCambio>(res);
-                               
-                                if (Convert.ToDouble(respZoho.venta) > 10000)
-                                {
-                                    respZoho.venta = respZoho.venta.Replace(".", ",");
-                                }
-                                valorCambioVenta = Convert.ToDouble(respZoho.venta);
+                                var respZoho = JsonSerializer.Deserialize<RespuestaTP>(res);
 
+                                valorCambioVenta = Convert.ToDouble(respZoho.venta);
 
                             }
                             catch (Exception ex)
@@ -100,7 +100,7 @@ namespace WATickets.Controllers
                     }
                     catch (Exception ex)
                     {
-                        var texto = DateTime.Now.ToLongDateString() + " -> Segubdo intento: " + ex.Message + "\n"; 
+                        var texto = DateTime.Now.ToLongDateString() + " -> Segundo intento: " + ex.Message + "\n"; 
                         texto += "===================================================";
                         G.GuardarTxt("BitacoraTP_" + DateTime.Now.ToShortDateString() + ".txt", texto);
 
