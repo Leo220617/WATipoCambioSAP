@@ -23,7 +23,7 @@ namespace WATickets.Controllers
                 HttpClient clienteProd = new HttpClient();
                 clienteProd.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                string url = "https://apis.gometa.org/tdc/tdc.json?fbclid=IwAR1Wfr6SFwV8_0-x9n5JrjMmNTkOcUIWdekp1Sc6sFpTnIuP29ok-aVuQWI";//"https://tipodecambio.paginasweb.cr/api//" + DateTime.Now.Day + "/" + DateTime.Now.Month + "/" + DateTime.Now.Year;
+                string url = "https://apis.gometa.org/tdc/tdc.json?fbclid=IwAR1Wfr6SFwV8_0-x9n5JrjMmNTkOcUIWdekp1Sc6sFpTnIuP29ok-aVuQWI"; 
                 try
                 {
                     HttpResponseMessage response3 = await clienteProd.GetAsync(url);
@@ -38,9 +38,14 @@ namespace WATickets.Controllers
                             //var respZoho = await response3.Content.ReadAsAsync<RespuestaTipoCambio>();
                             var respZoho = JsonSerializer.Deserialize<RespuestaTipoCambio>(res);
 
+                            if(respZoho.venta_date.Date != DateTime.Now.Date)
+                            {
+                                throw new Exception("Fecha diferente al tipo de cambio");
+                            }
+
                             if (Convert.ToDouble(respZoho.venta) > 10000)
                             {
-                                respZoho.venta = respZoho.venta.Replace(".", ",");
+                                respZoho.venta = respZoho.venta; //.Replace(".", ",");
                             }
                             valorCambioVenta = Convert.ToDouble(respZoho.venta);
 
@@ -64,8 +69,55 @@ namespace WATickets.Controllers
 
 
                 }
-                 
-                if(valorCambioVenta == 0)
+
+                if (valorCambioVenta == 0)
+                {
+                    clienteProd = new HttpClient();
+                    clienteProd.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    url = "https://api.hacienda.go.cr/indicadores/tc/dolar";
+                    try
+                    {
+                        HttpResponseMessage response3 = await clienteProd.GetAsync(url);
+                        if (response3.IsSuccessStatusCode)
+                        {
+                            //        response3.Content.Headers.ContentType.MediaType = "application/json";
+                            var res = await response3.Content.ReadAsStringAsync();
+
+
+                            try
+                            {
+                                //var respZoho = await response3.Content.ReadAsAsync<RespuestaTipoCambio>();
+                                var respZoho = JsonSerializer.Deserialize<RespuestaTCHacienda>(res);
+
+                                if (respZoho.venta.fecha.Date != DateTime.Now.Date)
+                                {
+                                    throw new Exception("Fecha diferente al tipo de cambio");
+                                }
+                                valorCambioVenta = Convert.ToDouble(respZoho.venta.valor);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                var texto = DateTime.Now.ToLongDateString() + " -> Segundo intento: " + ex.Message + "\n";
+                                texto += "===================================================";
+                                G.GuardarTxt("BitacoraTP_" + DateTime.Now.ToShortDateString() + ".txt", texto);
+
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var texto = DateTime.Now.ToLongDateString() + " -> Segundo intento: " + ex.Message + "\n";
+                        texto += "===================================================";
+                        G.GuardarTxt("BitacoraTP_" + DateTime.Now.ToShortDateString() + ".txt", texto);
+
+
+                    }
+                }
+
+                if (valorCambioVenta == 0)
                 {
                     clienteProd = new HttpClient();
                     clienteProd.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -85,6 +137,10 @@ namespace WATickets.Controllers
                                 //var respZoho = await response3.Content.ReadAsAsync<RespuestaTipoCambio>();
                                 var respZoho = JsonSerializer.Deserialize<RespuestaTP>(res);
 
+                                if (respZoho.fecha.Date != DateTime.Now.Date)
+                                {
+                                    throw new Exception("Fecha diferente al tipo de cambio");
+                                }
                                 valorCambioVenta = Convert.ToDouble(respZoho.venta);
 
                             }

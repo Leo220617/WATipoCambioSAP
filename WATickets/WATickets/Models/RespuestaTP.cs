@@ -8,5 +8,6 @@ namespace WATickets.Models
     public class RespuestaTP
     {
         public decimal venta { get; set; }
+        public DateTime fecha { get; set; }
     }
 }

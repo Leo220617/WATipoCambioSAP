@@ -44,7 +44,7 @@ namespace WATickets.Controllers
                             {
                                 if (Convert.ToDouble(respZoho.venta) > 10000)
                                 {
-                                    respZoho.venta = respZoho.venta.Replace(".", ",");
+                                    respZoho.venta = respZoho.venta;//.Replace(".", ",");
                                 }
                                 valorCambioVenta = Convert.ToDouble(respZoho.venta);
                             }
